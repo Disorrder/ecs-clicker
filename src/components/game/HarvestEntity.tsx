@@ -2,18 +2,21 @@ import { Button } from "~/components/ui/button";
 import { useWorldStore } from "~/store/world.store";
 
 interface Props extends React.ComponentProps<typeof Button> {
-  resource: string;
-  harvest: number;
+  products: Record<string, number>;
 }
 
 export function HarvestEntity(props: Props) {
-  const { resource, harvest } = props;
+  const { products, ...btnProps } = props;
 
   const charge = useWorldStore((state) => state.charge);
 
   function handleClick() {
-    charge(resource, harvest);
+    try {
+      charge(products);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  return <Button className="w-40" onClick={handleClick}>{resource}</Button>;
+  return <Button className="w-40" onClick={handleClick} {...btnProps} />;
 }
