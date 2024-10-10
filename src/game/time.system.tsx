@@ -8,7 +8,7 @@ export function TimeSystem() {
   const timeRef = useRef(0);
   const lastTickTimeRef = useRef(0);
 
-  const onTick = useWorldStore((state) => state.onTick);
+  const onTick = useWorldStore((state) => state.addTick);
 
   const paused = useSettingsStore((state) => state.paused);
   const speed = useSettingsStore((state) => state.speed);
