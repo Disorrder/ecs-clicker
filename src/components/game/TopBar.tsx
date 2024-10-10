@@ -36,7 +36,7 @@ export function TopBar() {
           pressed={paused}
           onPressedChange={setPaused}
         >
-          {paused ? <PauseIcon /> : <PlayIcon />}
+          {paused ? <PlayIcon /> : <PauseIcon />}
         </Toggle>
         <ToggleGroup
           type="single"
