@@ -18,7 +18,7 @@ interface WorldState {
   patchResourceLimits: (resources: Record<string, number>) => void;
   patchResources: (resources: Record<string, number>) => void;
   charge: (resources: Record<string, number>) => void;
-  withdraw: (resources: Record<string, number>) => void;
+  withdraw: (resources: Record<string, number>) => boolean;
 }
 
 export const useWorldStore = create<WorldState>((set) => ({
@@ -100,15 +100,25 @@ export const useWorldStore = create<WorldState>((set) => ({
   },
 
   withdraw: (data: Record<string, number>) => {
-    set((state) => {
-      const { resources } = state;
-      const newMap = new Map<string, number>(resources);
-      for (const [resource, amount] of Object.entries(data)) {
-        const currentAmount = resources.get(resource) || 0;
-        if (currentAmount < amount) return { resources };
-        newMap.set(resource, currentAmount - amount);
-      }
-      return { resources: newMap };
-    });
+    try {
+      set((state) => {
+        const { resources } = state;
+        const newMap = new Map<string, number>(resources);
+        for (const [resource, amount] of Object.entries(data)) {
+          const currentAmount = resources.get(resource) || 0;
+          if (currentAmount < amount) {
+            throw new Error(
+              `Not enough ${resource}: ${currentAmount} < ${amount}`,
+            );
+          }
+          newMap.set(resource, currentAmount - amount);
+        }
+        return { resources: newMap };
+      });
+    } catch (e) {
+      console.error("[World: withdraw]", e);
+      return false;
+    }
+    return true;
   },
 }));
