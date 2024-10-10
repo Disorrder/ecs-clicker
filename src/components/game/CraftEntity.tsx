@@ -9,8 +9,12 @@ interface Props extends React.ComponentProps<typeof Button> {
 export function CraftEntity(props: Props) {
   const { products, ingredients, ...btnProps } = props;
 
+  const resources = useWorldStore((state) => state.resources); // just watch
   const charge = useWorldStore((state) => state.charge);
   const withdraw = useWorldStore((state) => state.withdraw);
+  const canWithdraw = useWorldStore((state) => state.canWithdraw);
+
+  const disabled = !canWithdraw(ingredients);
 
   function handleClick() {
     try {
@@ -21,5 +25,12 @@ export function CraftEntity(props: Props) {
     }
   }
 
-  return <Button className="w-40" onClick={handleClick} {...btnProps} />;
+  return (
+    <Button
+      className="w-40"
+      onClick={handleClick}
+      disabled={disabled}
+      {...btnProps}
+    />
+  );
 }

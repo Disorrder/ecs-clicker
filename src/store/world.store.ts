@@ -19,6 +19,7 @@ interface WorldState {
   patchResources: (resources: Record<string, number>) => void;
   charge: (resources: Record<string, number>) => void;
   withdraw: (resources: Record<string, number>) => boolean;
+  canWithdraw: (resources: Record<string, number>) => boolean;
 }
 
 export const useWorldStore = create<WorldState>((set) => ({
@@ -97,6 +98,17 @@ export const useWorldStore = create<WorldState>((set) => ({
       }
       return { resources: newMap };
     });
+  },
+
+  canWithdraw: (data: Record<string, number>) => {
+    const { resources } = useWorldStore.getState();
+    for (const [resource, amount] of Object.entries(data)) {
+      const currentAmount = resources.get(resource) || 0;
+      if (currentAmount < amount) {
+        return false;
+      }
+    }
+    return true;
   },
 
   withdraw: (data: Record<string, number>) => {
