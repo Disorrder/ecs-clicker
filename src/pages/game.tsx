@@ -2,6 +2,7 @@ import { CraftEntity } from "~/components/game/CraftEntity";
 import { HarvestEntity } from "~/components/game/HarvestEntity";
 import { Resources } from "~/components/game/Resources";
 import GameLayout from "./_layout";
+import { BuildingEntity } from "~/components/game/BuildingEntity";
 
 export default function GamePage() {
   return (
@@ -16,6 +17,18 @@ export default function GamePage() {
             <hr />
             <div className="flex flex-wrap gap-2">
               <HarvestEntity products={{ rna: 1 }}>RNA</HarvestEntity>
+              <CraftEntity ingredients={{ rna: 2 }} products={{ dna: 1 }}>
+                DNA
+              </CraftEntity>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h4 className="">Buildings</h4>
+            <hr />
+            <div className="flex flex-wrap gap-2">
+              <BuildingEntity buildings={1} ingredients={{ rna: 1 }}>
+                Membrane
+              </BuildingEntity>
               <CraftEntity ingredients={{ rna: 2 }} products={{ dna: 1 }}>
                 DNA
               </CraftEntity>

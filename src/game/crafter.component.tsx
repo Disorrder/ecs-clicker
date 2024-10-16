@@ -1,33 +1,31 @@
-import { useEffect } from "react";
+import { useTick } from "~/hooks/useTick";
 import { useWorldStore } from "~/store/world.store";
 
 interface Props {
-  buildings: number;
+  multiplier: number;
   ingredients: Record<string, number>;
   products: Record<string, number>;
 }
 
 export function CrafterComponent(props: Props) {
-  const { buildings, ingredients, products } = props;
+  const { multiplier, ingredients, products } = props;
 
-  const tick = useWorldStore((state) => state.tick);
   const charge = useWorldStore((state) => state.charge);
   const withdraw = useWorldStore((state) => state.withdraw);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: depends on tick only
-  useEffect(() => {
+  useTick(() => {
     const spend: Record<string, number> = {};
     for (const slug in ingredients) {
-      spend[slug] = ingredients[slug] * buildings;
+      spend[slug] = ingredients[slug] * multiplier;
     }
     if (!withdraw(spend)) return;
 
     const produce: Record<string, number> = {};
     for (const slug in products) {
-      produce[slug] = products[slug] * buildings;
+      produce[slug] = products[slug] * multiplier;
     }
     charge(produce);
-  }, [tick]);
+  });
 
   return null;
 }

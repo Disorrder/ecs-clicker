@@ -15,11 +15,23 @@ interface WorldState {
   resourceLimits: Map<string, number>;
 
   resetResources: () => void;
-  patchResourceLimits: (resources: Record<string, number>) => void;
-  patchResources: (resources: Record<string, number>) => void;
+  patchResourceLimits: (data: Record<string, number>) => void;
+  patchResources: (data: Record<string, number>) => void;
   charge: (resources: Record<string, number>) => void;
   withdraw: (resources: Record<string, number>) => boolean;
   canWithdraw: (resources: Record<string, number>) => boolean;
+
+  /* Resource deltas */
+
+  _prevResources: Map<string, number>;
+  resourceDelta: Map<string, number>;
+  updateResourceDelta: () => void;
+
+  /* Entities */
+
+  entities: Map<string, number>;
+  resetEntities: () => void;
+  addEntity: (slug: string, amount?: number) => void;
 }
 
 export const useWorldStore = create<WorldState>((set) => ({
@@ -86,6 +98,10 @@ export const useWorldStore = create<WorldState>((set) => ({
     });
   },
 
+  setResourceDelta: (resourceDelta: Map<string, number>) => {
+    set({ resourceDelta });
+  },
+
   charge: (data: Record<string, number>) => {
     set((state) => {
       const { resources, resourceLimits } = state;
@@ -132,5 +148,39 @@ export const useWorldStore = create<WorldState>((set) => ({
       return false;
     }
     return true;
+  },
+
+  /* Resource deltas */
+
+  _prevResources: new Map<string, number>(),
+  resourceDelta: new Map<string, number>(),
+
+  updateResourceDelta: () => {
+    set((state) => {
+      const { resources, _prevResources } = state;
+      const newMap = new Map<string, number>();
+      resources.forEach((amount, slug) => {
+        const prev = _prevResources.get(slug);
+        if (prev === undefined) return;
+        newMap.set(slug, amount - prev);
+      });
+      return { resourceDelta: newMap, _prevResources: resources };
+    });
+  },
+
+  /* Entities */
+
+  entities: new Map<string, number>(),
+
+  resetEntities: () => {
+    set({ entities: new Map<string, number>() });
+  },
+
+  addEntity: (slug: string, amount = 1) => {
+    set((state) => {
+      const newMap = new Map<string, number>(state.entities);
+      newMap.set(slug, (newMap.get(slug) || 0) + amount);
+      return { entities: newMap };
+    });
   },
 }));

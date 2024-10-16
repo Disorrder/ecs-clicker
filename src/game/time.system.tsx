@@ -8,20 +8,18 @@ export function TimeSystem() {
   const timeRef = useRef(0);
   const lastTickTimeRef = useRef(0);
 
-  const onTick = useWorldStore((state) => state.addTick);
+  const addTick = useWorldStore((state) => state.addTick);
 
   const paused = useSettingsStore((state) => state.paused);
   const speed = useSettingsStore((state) => state.speed);
 
   useAnimationFrame((dt) => {
     if (paused) return;
-
     const time = timeRef.current + dt * speed;
     const nextTick = lastTickTimeRef.current + TICK_MS;
 
     if (time >= nextTick) {
-      console.log("before tick", lastTickTimeRef.current, time);
-      onTick();
+      addTick();
       lastTickTimeRef.current = nextTick;
     }
 
